@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A+ Core1 Under the Hood Labs</title>
+<meta name="description" content="Six hands-on A+ Core 1 labs — printers, workstation builds, RAID, power, wireless and mobile devices. Build it, run it, and see what it is actually doing. Part of the Cyber Warrior Program.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="top">
+    <h1>A+ Core1 Under the Hood Labs</h1>
+    <p>CompTIA A+ Core 1, 220-1201. Six labs where you build the thing, run it, and
+      see what it is actually doing &mdash; then live with whatever you chose.
+      Pick a lab, pick how long you have.</p>
+  </header>
+
+  <nav aria-label="Choose a lab">
+    <ul class="tabs" id="tabs" role="tablist"></ul>
+  </nav>
+
+  <div class="picker">
+    <div>
+      <label for="length">How long have you got?</label>
+      <select id="length"></select>
+    </div>
+    <p class="note" id="lengthnote"></p>
+  </div>
+
+  <main id="plan" aria-live="polite"></main>
+
+  <footer class="bot">
+    <p><strong>Cyber Warrior Program</strong> &middot; separate from the
+      <a href="https://rafikiscyent888.github.io/A-Core-1-Field-Service-Center/">Core 1 Field Service Center</a>,
+      which is where service calls get diagnosed. This is where things get built and taken apart.</p>
+    <p>For educational purposes only. Not affiliated with, endorsed by, or sponsored by CompTIA&reg;.
+      All trademarks belong to their respective owners.</p>
+  </footer>
+
+</div>
+
+<script type="module" src="assets/app.js"></script>
+</body>
+</html>
