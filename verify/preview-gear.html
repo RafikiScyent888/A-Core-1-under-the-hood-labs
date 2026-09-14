@@ -1,0 +1,19 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>gear</title>
+<style>body{margin:0;background:#eceff0;color:#14181b;font:16px/1.5 system-ui,sans-serif}
+.row{width:980px;margin:6px auto}h1{font-size:1.0rem;margin:10px 16px 2px}
+#err{color:#7a1010;font-weight:700;padding:0 16px}</style></head><body>
+<h1>Drive gear — worn: teeth rounded and polished, hub starting to craze</h1><div class="row" id="c"></div>
+<h1>Drive gear — failed: teeth snapped off, hub split around the shaft</h1><div class="row" id="d"></div>
+<div id="err"></div>
+<script type="module">
+import * as S from "../assets/scene.js";
+import { wearBench } from "../assets/bench-wear.js";
+const err=document.getElementById("err");
+window.addEventListener("error",e=>{err.textContent+="\n"+e.message;});
+try{
+ [["c","worn","Teeth rounded off and shiny, swarf in the roots, hub crazing"],
+  ["d","failed","Four teeth snapped clean off and the hub split around the shaft"]]
+ .forEach(([id,rung,look])=>S.mountScene(document.getElementById(id),
+   wearBench({shape:"gear",rung,label:"Drive gear",look}),{height:330}));
+}catch(e){err.textContent="THREW: "+(e&&e.stack||e);}
+</script></body></html>

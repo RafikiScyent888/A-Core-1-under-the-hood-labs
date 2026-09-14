@@ -1,0 +1,14 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>showroom</title>
+<style>body{margin:0;background:#eceff0;color:#14181b;font:16px/1.5 system-ui,sans-serif}
+.row{width:1140px;margin:6px auto}h1{font-size:1.0rem;margin:10px 16px 2px}
+#err{color:#7a1010;font-weight:700;padding:0 16px}</style></head><body>
+<h1>The choose stage — six machines on the shelf, nothing marked</h1><div class="row" id="a"></div>
+<div id="err"></div>
+<script type="module">
+import * as S from "../assets/scene.js";
+import { showroomBench } from "../assets/bench-showroom.js";
+const err=document.getElementById("err");
+window.addEventListener("error",e=>{err.textContent+="\n"+e.message;});
+try{ S.mountScene(document.getElementById("a"), showroomBench({}), {height:520}); }
+catch(e){err.textContent="THREW: "+(e&&e.stack||e);}
+</script></body></html>

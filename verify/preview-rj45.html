@@ -1,0 +1,27 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>RJ45</title>
+<style>body{margin:0;background:#11161b;color:#e8edf2;font:15px/1.5 system-ui,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:14px 18px 28px}
+h1{font-size:1.1rem;margin:4px 0 8px}p{margin:0 0 10px;max-width:80ch}
+.cap{font-weight:700;margin:10px 0 4px;font-size:.92rem}#err{color:#ff9;white-space:pre-wrap}</style>
+</head><body><div class="wrap">
+<h1>An RJ45 plug, built from its real dimensions</h1>
+<p class="cap">Both standards, side by side</p><div id="a"></div>
+<p class="cap">One plug, front on &mdash; contacts along the bottom, wire ends above them</p><div id="b"></div>
+<div id="err"></div></div>
+<script type="module">
+const err=document.getElementById("err");
+window.addEventListener("error",e=>{err.textContent+="\n"+e.message;});
+try{
+  const S=await import("../assets/scene.js");
+  const { rj45Bench }=await import("../assets/bench-net.js");
+  const two=rj45Bench({});
+  two.camera={dist:30,fitWidth:36,yaw:0.34,pitch:0.30,target:[0,0,2],min:6,max:60};
+  S.mountScene(document.getElementById("a"), two, {height:380});
+  const one=rj45Bench({wiring:"B"});
+  /* FRONT-ON, which is the view the photograph shows and the view a
+     technician uses to check a crimp. */
+  one.camera={dist:13,fitWidth:15,yaw:0.22,pitch:0.16,target:[0,0,3.5],min:4,max:50};
+  window.__SCENE=S.mountScene(document.getElementById("b"), one, {height:420});
+  window.__READY=true;
+}catch(e){err.textContent="THREW: "+(e&&e.stack||e);}
+</script></body></html>

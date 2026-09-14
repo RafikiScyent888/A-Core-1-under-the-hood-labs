@@ -1,0 +1,19 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>drum</title>
+<style>body{margin:0;background:#eceff0;color:#14181b;font:16px/1.5 system-ui,sans-serif}
+.row{width:980px;margin:6px auto}h1{font-size:1.0rem;margin:10px 16px 2px}
+#err{color:#7a1010;font-weight:700;padding:0 16px}</style></head><body>
+<h1>OPC drum — worn: score lines through to the core, pinholes, a thumbprint</h1><div class="row" id="c"></div>
+<h1>OPC drum — failed: bald edges, coating gone, silver tube showing</h1><div class="row" id="d"></div>
+<div id="err"></div>
+<script type="module">
+import * as S from "../assets/scene.js";
+import { wearBench } from "../assets/bench-wear.js";
+const err=document.getElementById("err");
+window.addEventListener("error",e=>{err.textContent+="\n"+e.message;});
+try{
+ [["c","worn","Score lines round it, pinholes, and a thumbprint somebody left on it"],
+  ["d","failed","Bald at both edges with the aluminium showing through"]]
+ .forEach(([id,rung,look])=>S.mountScene(document.getElementById(id),
+   wearBench({shape:"drum",rung,label:"OPC drum",look}),{height:330}));
+}catch(e){err.textContent="THREW: "+(e&&e.stack||e);}
+</script></body></html>

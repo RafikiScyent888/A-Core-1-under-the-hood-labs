@@ -1,0 +1,48 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>The LCD panel</title>
+<style>
+ body{margin:0;background:#eef1f2;color:#101417;font:16px/1.5 system-ui,sans-serif}
+ .wrap{max-width:1180px;margin:0 auto;padding:14px 18px 30px}
+ h1{font-size:1.25rem;margin:6px 0 2px}
+ .row{display:flex;gap:12px;flex-wrap:wrap}.cell{flex:1 1 360px}
+ .cap{font-weight:700;margin:0 0 1px;font-size:.95rem}
+ .sub{font-size:.85rem;color:#333d42;margin:0 0 4px}
+ #err{color:#7a1010;font-weight:700;white-space:pre-wrap}
+</style></head><body><div class="wrap">
+<h1>The LCD panel, rebuilt as the sandwich it is</h1>
+<p class="sub">Rear polariser, TFT glass, the sealed crystal gap, colour filter glass with its
+RGB stripes, and the front polariser as a frame with its axis at ninety degrees to the rear
+one. The source driver bonds to the bottom ledge; the gate driver runs down the side one.</p>
+<div class="row">
+  <div class="cell"><p class="cap">The whole module, flat on</p><div id="a"></div></div>
+  <div class="cell"><p class="cap">Close on the colour filter &mdash; RGB stripes and black matrix</p><div id="b"></div></div>
+</div>
+<div class="row">
+  <div class="cell"><p class="cap">The bottom edge &mdash; the source driver on its ledge</p><div id="c"></div></div>
+  <div class="cell"><p class="cap">The gate driver down the side ledge</p><div id="d"></div></div>
+</div>
+<div id="err"></div></div>
+<script type="module">
+import * as S from "../assets/scene.js";
+import { mobileBench } from "../assets/bench-mobile.js";
+const err=document.getElementById("err");
+window.addEventListener("error",e=>{err.textContent+="\n"+e.message;});
+try{
+const ALL = /^(layer-lcd|lcd-)/;
+const SHOTS = [
+  ["a", ALL, false, { dist: 17.0, yaw: 0.02, pitch: 1.30, target: [0, 6.3, 0], min: 3, max: 44 }],
+  ["b", ALL, true,  { dist: 1.5,  yaw: 0.10, pitch: 1.02, target: [0.7, 6.55, -1.0], min: 0.4, max: 40 }],
+  ["c", ALL, false, { dist: 8.5,  yaw: 0.34, pitch: 0.62, target: [0, 6.2, 4.6], min: 1.5, max: 44 }],
+  ["d", ALL, true,  { dist: 6.0,  yaw: -0.60, pitch: 0.72, target: [-1.9, 6.3, 0], min: 1, max: 44 }]
+];
+for (const [host, keys, noPhoto, cam] of SHOTS) {
+  const spec = mobileBench({ panel:"lcd",
+    states:{back:"na",battery:"na",midframe:"na",backlight:"na",lcd:"na",digitizer:"na",glass:"na"} });
+  spec.parts = spec.parts.filter(p => keys.test(p.key) && !(noPhoto && p.key === "lcd-photo"))
+    .map(p => Object.assign({}, p, { pos: [0, 0, 0] }));
+  spec.camera = cam;
+  S.mountScene(document.getElementById(host), spec, { height: 430 });
+}
+window.__READY=true;
+}catch(e){err.textContent="THREW: "+(e&&e.stack||e);}
+</script></body></html>

@@ -1,0 +1,20 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>mobile-brief — preview</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>body{margin:0}#host{max-width:880px;margin:12px auto;padding:0 16px}
+#err{color:#ff9;font-weight:700;padding:0 16px;white-space:pre-wrap}</style></head><body>
+<div id="host"></div><div id="err"></div>
+<script type="module">
+const err=document.getElementById("err");
+window.addEventListener("error",e=>{err.textContent+="\n"+e.message;});
+try{
+  const L=await import("../assets/lab-mobile.js");
+  const R=await import("../assets/runner.js");
+  const seed=Number(new URLSearchParams(location.search).get("seed")||1);
+  const s=L.generate(seed);
+  window.__FAULT=s.faultKey;
+  R.createRunner(document.getElementById("host"), {
+    lab:L, stages:[L.buildStage("brief", s)], scenario:s, onProgress(){}, onDone(){}
+  });
+  window.__READY=true;
+}catch(e){err.textContent="THREW: "+(e&&e.stack||e);}
+</script></body></html>

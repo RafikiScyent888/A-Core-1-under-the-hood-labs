@@ -1,0 +1,25 @@
+<!doctype html><meta charset="utf-8"><title>One panel, one angle</title>
+<body style="margin:0;background:#eceff0">
+<div id="s"></div><pre id="e" style="color:#7a1010"></pre>
+<script type="module">
+/* ONE PANEL AT A TIME, at an angle given in the query string. The four
+   panels on the screen bench are the same geometry with only `turn`
+   different, and a render of all four showed two of them apparently
+   missing their stands. Reading the builder said they could not be. This
+   page exists to make the render say what it is actually doing. */
+const S = await import("../assets/scene.js");
+const B = await import("../assets/bench-screen.js");
+const Q = new URLSearchParams(location.search);
+const turn = Number(Q.get("turn") || 0.9);
+try {
+  const spec = { parts: [
+    { key: "body", label: "body", build: B.panelBody(0, 0, turn), finish: "plastic", scale: 1,
+      pos: [0,0,0], color: B.SCREEN_COLOUR.bezel, spec: "", note: "" },
+    { key: "face", label: "face", build: B.panelFace(0, 0, turn), finish: "matte", scale: 1,
+      pos: [0,0,0], color: B.SCREEN_COLOUR.lit, spec: "", note: "" }
+  ], board: null, decor: [], title: "one", caption: "",
+    camera: { dist: 150, fitWidth: 150, yaw: 0.10, pitch: 0.18, target: [0,-10,0], min: 40, max: 400 } };
+  window.__H = S.mountScene(document.getElementById("s"), spec, { height: 520 });
+  window.__READY = true;
+} catch (e) { document.getElementById("e").textContent = "THREW: " + (e && e.stack || e); }
+</script>

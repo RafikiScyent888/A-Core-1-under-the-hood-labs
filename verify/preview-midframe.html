@@ -1,0 +1,30 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>Midframe — preview</title>
+<style>body{margin:0;background:#eceff0;color:#14181b;font:16px/1.5 system-ui,sans-serif}
+#a,#b{width:560px;display:inline-block;vertical-align:top}h1{font-size:1.15rem;margin:14px 16px 2px}
+h2{font-size:.95rem;margin:8px 16px 0}#err{color:#7a1010;font-weight:700;padding:0 16px;white-space:pre-wrap}</style>
+</head><body>
+<h1>The midframe as a casting, not a sheet</h1>
+<h2>Left: down the tub. Right: along the bottom wall, where the port gap and the grille holes are.</h2>
+<div id="a"></div><div id="b"></div><div id="err"></div>
+<script type="module">
+import * as S from "../assets/scene.js";
+import { mobileBench } from "../assets/bench-mobile.js";
+const err=document.getElementById("err");
+window.addEventListener("error",e=>{err.textContent+="\n"+e.message;});
+try{
+  const cams = {
+    a: { dist: 22.0, yaw: 0.42, pitch: 0.62, target: [0, 2.6, 0], min: 5, max: 40 },
+    /* low and from the bottom edge: a hole only proves itself in profile */
+    b: { dist: 9.0, yaw: 0.06, pitch: 0.24, target: [0.4, 2.7, 4.6], min: 4, max: 40 }
+  };
+  for (const host of ["a","b"]) {
+    const spec = mobileBench({ swollen:false, healthPct:96,
+      states:{back:"na",battery:"na",midframe:"na",backlight:"na",lcd:"na",digitizer:"na",glass:"na"} });
+    spec.parts = spec.parts.filter(p => p.key === "layer-midframe" || p.key === "midframe-gold");
+    spec.camera = cams[host];
+    S.mountScene(document.getElementById(host), spec, { height: 460 });
+  }
+  window.__READY=true;
+}catch(e){err.textContent="THREW: "+(e&&e.stack||e);}
+</script></body></html>

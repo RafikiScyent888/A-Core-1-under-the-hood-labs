@@ -1,0 +1,19 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>f</title>
+<style>body{margin:0;background:#eceff0;color:#14181b;font:16px/1.5 system-ui,sans-serif}
+.row{width:980px;margin:6px auto}h1{font-size:1.0rem;margin:10px 16px 2px}
+#err{color:#7a1010;font-weight:700;padding:0 16px}</style></head><body>
+<h1>Feeder roller — worn: glazed, and the rubber has perished and split</h1><div class="row" id="b"></div>
+<h1>Feeder roller — failed: tread gone, chunks out of it, shaft showing through</h1><div class="row" id="c"></div>
+<div id="err"></div>
+<script type="module">
+import * as S from "../assets/scene.js";
+import { wearBench } from "../assets/bench-wear.js";
+const err=document.getElementById("err");
+window.addEventListener("error",e=>{err.textContent+="\n"+e.message;});
+try{
+ [["b","worn","Glazed, and the rubber has perished and split around it"],
+  ["c","failed","Tread gone, chunks out of the tyre, shaft showing through"]]
+ .forEach(([id,rung,look])=>S.mountScene(document.getElementById(id),
+   wearBench({shape:"roller",rung,label:"Feeder roller",look}),{height:330}));
+}catch(e){err.textContent="THREW: "+(e&&e.stack||e);}
+</script></body></html>

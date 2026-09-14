@@ -1,0 +1,49 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>The backlight stack</title>
+<style>
+ body{margin:0;background:#eef1f2;color:#101417;font:16px/1.5 system-ui,sans-serif}
+ .wrap{max-width:1180px;margin:0 auto;padding:14px 18px 30px}
+ h1{font-size:1.25rem;margin:6px 0 2px}
+ .row{display:flex;gap:12px;flex-wrap:wrap}.cell{flex:1 1 360px}
+ .cap{font-weight:700;margin:0 0 1px;font-size:.95rem}
+ .sub{font-size:.85rem;color:#333d42;margin:0 0 4px}
+ #err{color:#7a1010;font-weight:700;white-space:pre-wrap}
+</style></head><body><div class="wrap">
+<h1>The backlight &mdash; reflector, guide plate, LED strip, three films</h1>
+<p class="sub">The three films are cut back along one long edge, cascading to the right, so a
+margin down the left of the plate stays open for its whole length and every one of the
+thirteen dot rows shows. Sparse and small at the LED end, crowded and larger at the far
+end &mdash; that gradient is the whole mechanism.</p>
+<div class="row">
+  <div class="cell"><p class="cap">The whole layer, flat on</p><div id="a"></div></div>
+  <div class="cell"><p class="cap">Three-quarter, into the fan</p><div id="b"></div></div>
+</div>
+<div class="row">
+  <div class="cell"><p class="cap">The plate alone &mdash; the full dot gradient</p><div id="c"></div></div>
+  <div class="cell"><p class="cap">The LED strip firing into the edge</p><div id="d"></div></div>
+</div>
+<div id="err"></div></div>
+<script type="module">
+import * as S from "../assets/scene.js";
+import { mobileBench } from "../assets/bench-mobile.js";
+const err=document.getElementById("err");
+window.addEventListener("error",e=>{err.textContent+="\n"+e.message;});
+try{
+const ALL = /^(layer-backlight|led-strip|light-guide)$/;
+const SHOTS = [
+  ["a", ALL,               { dist: 17.0, yaw: 0.02, pitch: 1.30, target: [0.6, 6.3, 0], min: 3, max: 44 }],
+  ["b", ALL,               { dist: 15.0, yaw: 0.52, pitch: 0.44, target: [0.6, 6.3, 0], min: 3, max: 44 }],
+  ["c", /^light-guide$/,   { dist: 15.0, yaw: 0.02, pitch: 1.30, target: [0, 6.3, 0], min: 3, max: 44 }],
+  ["d", ALL,               { dist: 5.0,  yaw: 0.06, pitch: 0.16, target: [0, 6.2, 5.4], min: 3, max: 44 }]
+];
+for (const [host, keys, cam] of SHOTS) {
+  const spec = mobileBench({ panel:"lcd",
+    states:{back:"na",battery:"na",midframe:"na",backlight:"na",lcd:"na",digitizer:"na",glass:"na"} });
+  spec.parts = spec.parts.filter(p => keys.test(p.key))
+    .map(p => Object.assign({}, p, { pos: [0, 0, 0] }));
+  spec.camera = cam;
+  S.mountScene(document.getElementById(host), spec, { height: 430 });
+}
+window.__READY=true;
+}catch(e){err.textContent="THREW: "+(e&&e.stack||e);}
+</script></body></html>

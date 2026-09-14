@@ -1,0 +1,23 @@
+<!doctype html><meta charset="utf-8"><title>AP bench preview</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>body{background:#12161b;color:#e9edf1;font:15px system-ui;margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding:14px 18px 28px}
+h2{font-size:17px;margin:16px 0 6px}pre{color:#ffb4b4;white-space:pre-wrap}</style>
+<div class="wrap">
+<h2>Mount — the AP, its bracket, the injector</h2><div id="a"></div>
+<h2>Antenna — internal omni, external dipoles, directional panel</h2><div id="b"></div>
+<pre id="err"></pre></div>
+<script type="module">
+const err=document.getElementById("err");
+window.addEventListener("error",e=>{err.textContent+="\n"+e.message;});
+try{
+  const S=await import("../assets/scene.js");
+  const { apBench }=await import("../assets/bench-ap.js");
+  const T=parseFloat(new URLSearchParams(location.search).get("tight")||"1");
+  const mk=(v)=>{const b=apBench(v);b.camera=Object.assign({},b.camera,
+    {fitWidth:b.camera.fitWidth*T,dist:b.camera.dist*T,min:4});return b;};
+  window.__A=S.mountScene(document.getElementById("a"), mk({show:"mount"}), {height:440});
+  window.__B=S.mountScene(document.getElementById("b"), mk({show:"antenna"}), {height:460});
+  window.__READY=true;
+}catch(e){err.textContent="THREW: "+(e&&e.stack||e);}
+</script>

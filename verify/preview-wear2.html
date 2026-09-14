@@ -1,0 +1,20 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>w</title>
+<style>body{margin:0;background:#eceff0;color:#14181b;font:16px/1.5 system-ui,sans-serif}
+.row{width:980px;margin:6px auto}h1{font-size:1.0rem;margin:10px 16px 2px}
+#err{color:#7a1010;font-weight:700;padding:0 16px;white-space:pre-wrap}</style></head><body>
+<h1>Thermal heating element — worn</h1><div class="row" id="d0"></div>
+<h1>Tractor sprockets — failed</h1><div class="row" id="d1"></div>
+<h1>Head ribbon contacts — worn</h1><div class="row" id="d2"></div>
+<h1>Inkjet capping pads — worn</h1><div class="row" id="d3"></div>
+<div id="err"></div><script type="module">
+import * as S from "../assets/scene.js";
+import { wearBench } from "../assets/bench-wear.js";
+const err=document.getElementById("err");
+window.addEventListener("error",e=>{err.textContent+="\n"+e.message;});
+try{
+ S.mountScene(document.getElementById("d0"),wearBench({shape:"bar",rung:"worn",label:"Thermal heating element",look:"A scratch you can see in the ceramic coat"}),{height:300});
+ S.mountScene(document.getElementById("d1"),wearBench({shape:"sprocket",rung:"failed",label:"Tractor sprockets",look:"Pins bent, and two missing altogether"}),{height:300});
+ S.mountScene(document.getElementById("d2"),wearBench({shape:"contact",rung:"worn",label:"Head ribbon contacts",look:"Dark tarnish creeping in from the outer fingers"}),{height:300});
+ S.mountScene(document.getElementById("d3"),wearBench({shape:"pad",rung:"worn",label:"Inkjet capping pads",look:"Perished and cracked across the sealing face"}),{height:300});
+}catch(e){err.textContent="THREW: "+(e&&e.stack||e);}
+</script></body></html>

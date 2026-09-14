@@ -1,0 +1,16 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>label alone</title>
+<style>body{margin:0;background:#eef1f2;font:14px system-ui}</style></head><body>
+<div id="host" style="width:700px"></div><div id="err"></div>
+<script type="module">
+import * as S from "../assets/scene.js";
+import { mobileBench } from "../assets/bench-mobile.js";
+try{
+const spec = mobileBench({ panel:"lcd",
+  states:{back:"na",battery:"na",midframe:"na",backlight:"na",lcd:"na",digitizer:"na",glass:"na"} });
+spec.parts = spec.parts.filter(p => p.key === "battery-label")
+  .map(p => Object.assign({}, p, { pos: [0,0,0] }));
+spec.camera = { dist: 8.0, yaw: 0.0, pitch: 1.5708, target: [0, 1.6, 0.8], min: 2, max: 40 };
+S.mountScene(document.getElementById("host"), spec, { height: 700 });
+}catch(e){document.getElementById("err").textContent="THREW: "+(e&&e.stack||e);}
+window.__READY=true;
+</script></body></html>

@@ -1,0 +1,21 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>specs stage — preview</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>body{margin:0}#host{max-width:1080px;margin:12px auto;padding:0 16px}
+#err{color:#7a1010;font-weight:700;padding:0 16px;white-space:pre-wrap}</style></head><body>
+<div id="host"></div><div id="err"></div>
+<script type="module">
+const err=document.getElementById("err");
+window.addEventListener("error",e=>{err.textContent+="\n"+e.message;});
+window.addEventListener("unhandledrejection",e=>{err.textContent+="\nPROMISE "+((e.reason&&e.reason.message)||e.reason);});
+try{
+  const L=await import("../assets/lab-build.js");
+  const R=await import("../assets/runner.js");
+  const seed=Number(new URLSearchParams(location.search).get("seed")||100007);
+  const s=L.generate(seed);
+  R.createRunner(document.getElementById("host"), {
+    lab:L, stages:[L.buildStage("specs", s)], scenario:s,
+    onProgress(){}, onDone(){}
+  });
+  window.__READY=true;
+}catch(e){err.textContent="THREW: "+(e&&e.stack||e);}
+</script></body></html>

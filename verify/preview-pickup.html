@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Laser feed area — preview</title>
+<style>
+  body { margin: 0; background: #eceff0; color: #14181b;
+         font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  #stage { width: 1100px; margin: 12px auto; }
+  h1 { font-size: 1.15rem; margin: 14px 16px 2px; }
+  p  { margin: 0 16px 8px; max-width: 70ch; }
+  #err { color: #7a1010; font-weight: 700; padding: 0 16px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<h1>The feed area, close up — built from the owner's annotated photograph</h1>
+<p>Four things the owner labelled on a real LaserJet Pro, three of which were not
+   in this model at all: the <b>separation pads</b> facing the tyres across the nip,
+   the <b>pickup rollers</b> on one shaft, the <b>gear drive</b> on the near end of it,
+   and the <b>tray lift plate</b> on its two coil springs underneath.</p>
+<div id="stage"></div>
+<div id="err"></div>
+<script type="module">
+/* Nothing varies here but the camera: this page exists so the feed area
+   can be looked at on its own, at the size it is actually drawn, rather
+   than as a corner of a whole-machine render where four small parts are
+   twenty pixels across and any one of them could be a blob. */
+import * as S from "../assets/scene.js";
+import { printerBench } from "../assets/bench-printer.js";
+const err = document.getElementById("err");
+window.addEventListener("error", e => { err.textContent += "\n" + e.message; });
+try {
+  const q = new URLSearchParams(location.search);
+  const spec = printerBench({
+    tech: "laser",
+    sheets: q.has("sheets") ? Number(q.get("sheets")) : 11,
+    sheetAt: null,
+    states: { processing:"ok", charging:"ok", exposing:"ok", developing:"ok",
+              transferring:"ok", fusing:"ok", cleaning:"ok" }
+  });
+  spec.camera = { dist: Number(q.get("dist") || 12), yaw: Number(q.get("yaw") || 0.55),
+                  pitch: Number(q.get("pitch") || 0.30), target: [-5.6, 2.5, 0],
+                  min: 5, max: 40 };
+  const h = S.mountScene(document.getElementById("stage"), spec, { height: 660 });
+  window.__SCENE = h;
+  window.__READY = true;
+} catch (e) { err.textContent = "THREW: " + (e && e.stack || e); }
+</script>
+</body>
+</html>

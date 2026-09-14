@@ -1,0 +1,32 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>T568A / T568B</title>
+<style>body{margin:0;background:#11161b;color:#e8edf2;font:15px/1.5 system-ui,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:14px 18px}
+h1{font-size:1.1rem;margin:4px 0 8px}p{margin:0 0 10px;max-width:70ch}
+canvas{display:block;border:1px solid #39424c;background:#fff}
+#err{color:#ff9;white-space:pre-wrap}</style></head><body><div class="wrap">
+<h1>What the painter draws &mdash; the colour code itself, at full size</h1>
+<p>This is the texture, not the model. If the chart is right here, any problem is in how it
+lands on the plate.</p>
+<div id="out"></div><div id="err"></div></div>
+<script type="module">
+const err=document.getElementById("err");
+window.addEventListener("error",e=>{err.textContent+="\n"+e.message;});
+try{
+  /* THE REAL RENDERER, not a stub of it. The first attempt at this page
+     faked THREE with four constructors and it threw on the fifth thing
+     surface() touched — which told me nothing about the painter and cost
+     a round. If the module is there, use it. */
+  const THREE = await import("../assets/three.module.min.js");
+  const S = await import("../assets/surface.js");
+  const sk = S.surface("punchdown", THREE, 640, 1, null);
+  const out = document.getElementById("out");
+  const img = sk && sk.map && sk.map.image;
+  if (!img) { err.textContent = "surface() returned no map"; }
+  else {
+    const c=document.createElement("canvas"); c.width=640; c.height=640;
+    c.getContext("2d").drawImage(img,0,0,640,640);
+    out.appendChild(c);
+  }
+  window.__READY=true;
+}catch(e){err.textContent="THREW: "+(e&&e.stack||e);}
+</script></body></html>

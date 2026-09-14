@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>RAID bench — states</title>
+<style>
+  :root { --paper: #eceff0; }
+  body { margin: 0; background: #eceff0; color: #11161a;
+         font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .row { max-width: 1160px; margin: 0 auto 6px; padding: 10px 16px 0; }
+  h2 { font-size: 1.05rem; margin: 0 0 2px; }
+  p.why { margin: 0 0 6px; font-size: 0.92rem; color: #2b3238; max-width: 78ch; }
+  .tag { display: inline-block; font-weight: 700; font-size: 0.82rem;
+         padding: 1px 8px; border-radius: 10px; color: #fff; margin-left: 6px;
+         vertical-align: 2px; }
+  #err { color: #7a1010; white-space: pre-wrap; padding: 0 16px; font-weight: 700; }
+</style>
+</head>
+<body>
+<div id="all"></div>
+<div id="err"></div>
+<script type="module">
+import * as S from "../assets/scene.js";
+import { raidBench } from "../assets/bench-raid.js";
+import { makeArray, pull, insert, tick, capacityTB, toleranceGuaranteed } from "../assets/array.js";
+
+const err = document.getElementById("err");
+window.addEventListener("error", e => { err.textContent += "\n" + e.message; });
+
+const TAGCOL = { healthy:"#1f6b31", degraded:"#8a5200", critical:"#8a1f1f",
+                 rebuilding:"#8a5200", lost:"#6b0f0f" };
+
+/* Every scene below is produced by DRIVING array.js, never by posing the
+   bays by hand — so what you see is what the rules actually did. */
+const CASES = [];
+
+/* 1 — healthy, with a hot spare standing by */
+(() => {
+  const a = makeArray({ level:"RAID 5", memberCount:5, spares:1, sizeTB:4, bayCount:8 });
+  CASES.push({ a, title:"RAID 5, five members, one hot spare",
+    why:"Six 4 TB drives are physically fitted — 24 TB of metal — and the array is "
+      + capacityTB("RAID 5",5,4) + " TB. Five members give " + capacityTB("RAID 5",5,4)
+      + " TB usable because one member's worth goes to parity, and the sixth drive is the "
+      + "spare at bay 6 (blue): powered, spinning, and contributing nothing until something "
+      + "fails. Survives " + toleranceGuaranteed("RAID 5",5) + " failure." });
+})();
+
+/* 2 — one member has failed outright */
+(() => {
+  const a = makeArray({ level:"RAID 5", memberCount:5, spares:1, sizeTB:4, bayCount:8 });
+  a.bays[2].state = "failed";
+  a.bays[4].state = "predictive";
+  const { recompute } = { recompute: null };
+  /* drive it through the real path */
+  const r = pull(a, 2); a.bays[2].state = "failed";
+  CASES.push({ a, title:"Bay 3 failed — and bay 5 is warning about itself",
+    why:"Two ambers and a red. Bay 3 is out and the array is running on parity. Bay 5 has not "
+      + "failed; it is reporting that it expects to. Which one you touch next decides whether "
+      + "this is a maintenance job or an outage." });
+})();
+
+/* 3 — replacement fitted, rebuild under way */
+(() => {
+  const a = makeArray({ level:"RAID 5", memberCount:5, spares:1, sizeTB:4, bayCount:8 });
+  pull(a, 2);
+  const ins = insert(a, 2, {});
+  tick(a, 40);
+  a.bays[4].state = "predictive";
+  CASES.push({ a, title:"Rebuilding onto bay 3 — 40% in",
+    why: ins.why });
+})();
+
+/* 4 — the mistake. A second member pulled during that rebuild. */
+(() => {
+  const a = makeArray({ level:"RAID 5", memberCount:5, spares:1, sizeTB:4, bayCount:8 });
+  pull(a, 2); insert(a, 2, {}); tick(a, 40);
+  a.bays[4].state = "predictive";
+  const r = pull(a, 4);          /* the one that was "warning about itself" */
+  CASES.push({ a, title:"Bay 5 pulled while bay 3 was rebuilding", why: r.why });
+})();
+
+/* 5 — RAID 10 losing one from each pair, and surviving it */
+(() => {
+  const a = makeArray({ level:"RAID 10", memberCount:6, sizeTB:4, bayCount:8 });
+  pull(a, 0); pull(a, 2); pull(a, 4);
+  CASES.push({ a, title:"RAID 10 — three drives out, still serving",
+    why:"One from each of the three mirror pairs. The exam answer for RAID 10 fault tolerance "
+      + "is 1, because that is what it GUARANTEES — but a set that loses one half of every "
+      + "pair is still running, and a student who has seen this understands why the guarantee "
+      + "and the outcome are different numbers." });
+})();
+
+/* 6 — RAID 10 losing both halves of one pair */
+(() => {
+  const a = makeArray({ level:"RAID 10", memberCount:6, sizeTB:4, bayCount:8 });
+  pull(a, 0);
+  const r = pull(a, 1);
+  CASES.push({ a, title:"RAID 10 — both halves of one pair", why: r.why });
+})();
+
+const host = document.getElementById("all");
+try {
+  CASES.forEach((c, n) => {
+    const wrap = document.createElement("div"); wrap.className = "row";
+    const h = document.createElement("h2");
+    h.textContent = (n + 1) + ". " + c.title;
+    const tag = document.createElement("span");
+    tag.className = "tag"; tag.textContent = c.a.status.toUpperCase();
+    tag.style.background = TAGCOL[c.a.status] || "#333";
+    h.appendChild(tag);
+    const p = document.createElement("p"); p.className = "why"; p.textContent = c.why;
+    wrap.appendChild(h); wrap.appendChild(p);
+    const stage = document.createElement("div");
+    wrap.appendChild(stage); host.appendChild(wrap);
+
+    const view = {
+      level: c.a.level,
+      arrayState: c.a.status === "lost" ? "critical" : c.a.status,
+      focus: null,
+      bays: c.a.bays.map(b => ({ state: b.state, sizeTB: b.sizeTB || undefined }))
+    };
+    S.mountScene(stage, raidBench(view), { height: 300 });
+  });
+  window.__ok = true;
+} catch (e) {
+  window.__ok = false;
+  err.textContent = "THREW: " + (e && e.stack || e);
+}
+</script>
+</body>
+</html>

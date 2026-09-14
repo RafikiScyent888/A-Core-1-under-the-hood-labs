@@ -1,0 +1,31 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>power-on signs — preview</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>body{margin:0;background:#14171f}#host{width:1000px;height:520px;margin:0}</style></head><body>
+<div id="host"></div><div id="err" style="color:#ff9;white-space:pre-wrap"></div>
+<script type="module">
+/* Draws the bench and NOTHING ELSE varies. The stage preview cannot be
+   used to measure one sign against itself, because two seeds differ in
+   more than the sign under test. Here the three signs are the only
+   inputs, so a whole-canvas diff isolates exactly one of them. */
+const err=document.getElementById("err");
+window.addEventListener("error",e=>{err.textContent+="\n"+e.message;});
+try{
+  const B=await import("../assets/bench-build.js");
+  const S=await import("../assets/bench.js");
+  const q=new URLSearchParams(location.search);
+  const on=k=>q.get(k)==="1";
+  S.mountBench(document.getElementById("host"), {
+    height:520,
+    spec:()=>B.buildBench({
+      slots:4, coolerMm:145, gpuMm:0, cpuLabel:"fitted",
+      fitted:{cpu:"seated",cooler:"seated",ram:"seated",gpu:"seated",psu24:"seated",eps:"seated",m2:"seated"},
+      ramIn:[0,2],
+      signs:{fan:on("fan"), beep:on("beep"), video:on("video")}
+    }),
+    status:()=>({tone:"warn",words:"Powered on",detail:"preview"}),
+    controls:()=>[],
+    onAction:()=>({})
+  });
+  window.__READY=true;
+}catch(e){err.textContent="THREW: "+(e&&e.stack||e);}
+</script></body></html>

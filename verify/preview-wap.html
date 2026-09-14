@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Wireless bench — preview</title>
+<style>
+  :root { --paper: #eceff0; }
+  body { margin: 0; background: #eceff0; color: #14181b;
+         font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  #stage { width: 1100px; margin: 12px auto; }
+  h1 { font-size: 1.2rem; margin: 14px 16px 6px; }
+  #err { color: #7a1010; font-weight: 700; padding: 0 16px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<h1>Wireless bench — microwave dominant, three sources stacking</h1>
+<div id="stage"></div>
+<div id="err"></div>
+<script type="module">
+import * as S from "../assets/scene.js";
+import { wapBench } from "../assets/bench-wap.js";
+const err = document.getElementById("err");
+window.addEventListener("error", e => { err.textContent += "\n" + e.message; });
+try {
+  const cols = 7, rows = 5, cells = [];
+  const MATS = ["open","open","open","drywall","brick","concrete","metal","glass","water","mirror"];
+  for (let y=0;y<rows;y++) for (let x=0;x<cols;x++)
+    cells.push({ x, y, mat: MATS[(x*3+y*5) % MATS.length] });
+  const spec = wapBench({
+    cols, rows, cells,
+    dominant: "microwave",
+    sources: [
+      { key:"microwave", x:5, y:1, reach:2.4, noise:28, band:"2.4" },
+      { key:"cordless",  x:1, y:3, reach:1.6, noise:16, band:"2.4" },
+      { key:"ballast",   x:3, y:0, reach:1.2, noise:9,  band:"2.4" },
+      { key:"materials", x:0, y:0, reach:0,   noise:0,  band:"both" }
+    ],
+    ap: { x:3, y:2, radius:2.3 },
+    clients: [ {key:"desk",label:"Front desk",x:1,y:0,ok:true},
+               {key:"far",label:"Meeting room",x:6,y:4,ok:false},
+               {key:"mid",label:"Corridor",x:2,y:3,ok:true} ]
+  });
+  const h = S.mountScene(document.getElementById("stage"), spec, { height: 640 });
+  window.__ok = !!h;
+  if (!h) err.textContent = "mountScene returned null";
+} catch (e) { window.__ok = false; err.textContent = "THREW: " + (e && e.stack || e); }
+</script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>Battery pouches — preview</title>
+<style>body{margin:0;background:#eceff0;color:#14181b;font:16px/1.5 system-ui,sans-serif}
+#a,#b{width:560px;display:inline-block;vertical-align:top}h1{font-size:1.15rem;margin:14px 16px 2px}
+h2{font-size:.95rem;margin:8px 16px 0}#err{color:#7a1010;font-weight:700;padding:0 16px;white-space:pre-wrap}</style>
+</head><body>
+<h1>Two pouches, the owner's photograph in geometry</h1>
+<h2>Good cell (left) and swollen cell (right) — same colour, same footprint, the middle lifts</h2>
+<div id="a"></div><div id="b"></div><div id="err"></div>
+<script type="module">
+import * as S from "../assets/scene.js";
+import { mobileBench } from "../assets/bench-mobile.js";
+const err=document.getElementById("err");
+window.addEventListener("error",e=>{err.textContent+="\n"+e.message;});
+try{
+  for (const [host,swollen] of [["a",false],["b",true]]) {
+    const spec = mobileBench({ swollen, healthPct: swollen?61:96,
+      states:{back:"na",battery:swollen?"danger":"ok",midframe:"na",backlight:"na",lcd:"na",digitizer:"na",glass:"na"} });
+    /* only the cell, close, from a low angle — the angle you see a dome from */
+    spec.parts = spec.parts.filter(p => /battery/i.test(p.key));
+    spec.camera = host==="a" ? { dist: 21.0, yaw: 0.62, pitch: 0.30, target: [0, 2.5, 0.8], min: 5, max: 40 }
+                             : { dist: 11.0, yaw: 0.34, pitch: 0.22, target: [0, 2.7, 0.8], min: 5, max: 40 };
+    S.mountScene(document.getElementById(host), spec, { height: 420 });
+  }
+  window.__READY=true;
+}catch(e){err.textContent="THREW: "+(e&&e.stack||e);}
+</script></body></html>
