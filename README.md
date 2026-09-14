@@ -56,6 +56,12 @@ as a tiered stage list:
 | **Project** | An hour or more. Every stage, progress saved so you can come back |
 | **Layered** | The Quick path, with each deeper stage offered as you reach it |
 
+**Layered is what the dropdown opens on.** It is the one closest in shape to
+[Core-1-Sims](https://rafikiscyent888.github.io/Core-1-Sims/) — a short spine
+with the depth there for whoever wants it — so a student crossing between the
+two builds lands on something they already recognise. Pick another and it stays
+picked.
+
 **The rule that makes this work:** the Quick path is a complete, coherent job on
 its own. Longer choices *add* stages; they never unlock an ending the short path
 was missing. It is the middle that stretches.
@@ -91,6 +97,32 @@ every lab teaches itself:
 **Every scenario is generated from a seed**, shown on screen. A student can
 report "seed 481203 marked me wrong" and the exact scenario comes back.
 
+**Every lab offers six NAMED jobs**, and the seeds behind them are the same on
+every machine — they are derived from the lab rather than drawn at random. So a
+class can be set the same one by name: "everyone do the Continental Freightways
+printer job." The first in the list loads if nobody chooses.
+
+**Instructor mode, PIN 3693**, sits beside the reading and theme settings. It
+shows the job sheet — every lab's six jobs with their seeds and the objectives
+that lab covers — and, inside a running lab, the answers for the stage on
+screen. It is off again as soon as the page reloads, because these are shared
+machines. The PIN is four digits in a file anybody can read and the site says so
+on the prompt: it keeps the answers out of a student's *way*, not out of their
+reach, so nothing is behind it that would hurt anybody who looked.
+
+## The storage room
+
+A button inside every lab puts the job down and takes you to the front page,
+where it waits — the seed, the stage, the questions already answered and how
+many times you had gone wrong on each, so the hints pick up where they were.
+One slot per lab. An hour is longer than a bus ride, and a lab that can only be
+finished in one sitting is a lab a lot of people never finish.
+
+Finished jobs are kept on the same shelf, below the parked ones: what you did,
+what you scored, and a button to do it again. Doing one again keeps the better
+of the two scores, and finishing a job takes it off the parked shelf — the two
+are one job in two states.
+
 ## The 3D benches
 
 Every lab has one: a real Three.js model of the hardware, with the controls
@@ -115,6 +147,14 @@ wide panel quietly loses its ends on a narrow one — and a cropped edge looks
 deliberate, so eyes never catch it. Three benches were doing exactly that:
 the network path lost the provider handoff, the RAID chassis lost bay 8 and
 the front panel, and the wireless plan lost the Bluetooth halo.
+
+**The machine follows you through the lab.** Some stages are a brief to read or
+a calculation to do and have no bench of their own; those show the lab's own
+machine — the same object you clicked in the workshop to get in — with its parts
+named beside it. Fifty-three named parts across the eleven machines, each with
+something a technician would actually say about it: why the rocker on the back
+of a supply is not the button on the front of the case, why a blanked port means
+the second port does not exist rather than being dead.
 
 **The canvas is scenery. The buttons are the interface.** A WebGL canvas is
 an opaque rectangle to a screen reader and does not reflow at 400% zoom, so
