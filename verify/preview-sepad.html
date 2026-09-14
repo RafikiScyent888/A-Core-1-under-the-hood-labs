@@ -1,0 +1,19 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>sepad</title>
+<style>body{margin:0;background:#eceff0;color:#14181b;font:16px/1.5 system-ui,sans-serif}
+.row{width:980px;margin:6px auto}h1{font-size:1.0rem;margin:10px 16px 2px}
+#err{color:#7a1010;font-weight:700;padding:0 16px}</style></head><body>
+<h1>Separation pad — fresh: matte micro-texture across the whole face</h1><div class="row" id="a"></div>
+<h1>Separation pad — worn: bald polished zone, trench forming, dust everywhere</h1><div class="row" id="c"></div>
+<div id="err"></div>
+<script type="module">
+import * as S from "../assets/scene.js";
+import { wearBench } from "../assets/bench-wear.js";
+const err=document.getElementById("err");
+window.addEventListener("error",e=>{err.textContent+="\n"+e.message;});
+try{
+ [["a","fresh","Matte, evenly textured across the face"],
+  ["c","worn","Bald and shiny down the middle, with a trench starting"]]
+ .forEach(([id,rung,look])=>S.mountScene(document.getElementById(id),
+   wearBench({shape:"sepad",rung,label:"Separation pad",look}),{height:330}));
+}catch(e){err.textContent="THREW: "+(e&&e.stack||e);}
+</script></body></html>

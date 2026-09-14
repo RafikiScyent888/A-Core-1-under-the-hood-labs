@@ -1,0 +1,38 @@
+<!doctype html><meta charset="utf-8"><title>Panels, projector and the UPS</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>body{background:#12161b;color:#e9edf1;font:15px system-ui;margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding:14px 18px 28px}
+h2{font-size:17px;margin:16px 0 4px}
+p.sub{margin:0 0 8px;color:#b8c2cc;font-size:13.5px;max-width:80ch}
+pre{color:#ffb4b4;white-space:pre-wrap}</style>
+<div class="wrap">
+<h2>Choose the panel for the job — four panels, turned to show what actually differs</h2>
+<p class="sub">Straight on they are identical, which is the point of them. TN is turned 52&deg;
+and has washed out, VA 30&deg; and is holding, IPS and OLED 10&deg; and have barely changed —
+and the OLED's face is near-black because its black is the pixel switched off. Response time
+and refresh rate are deliberately not drawn: a still picture cannot show motion.</p>
+<div id="a"></div>
+
+<h2>The meeting room projector — lens, filter, lamp door, exhaust</h2>
+<p class="sub">Intake one side, exhaust the other. Two of these four are consumables and one of
+them is why a projector shuts down twenty minutes into a meeting.</p>
+<div id="b"></div>
+
+<h2>The back of a UPS — and the row that does nothing in a cut</h2>
+<p class="sub">Two banks of sockets, inches apart, identical to look at, and every plug fits
+both. One holds up when the mains fails; one is only protected against spikes.</p>
+<div id="c"></div>
+<pre id="err"></pre></div>
+<script type="module">
+const err=document.getElementById("err");
+window.addEventListener("error",e=>{err.textContent+="\n"+e.message;});
+try{
+  const S=await import("../assets/scene.js");
+  const { screenBench }=await import("../assets/bench-screen.js");
+  const { psuBench }=await import("../assets/bench-psu.js");
+  window.__A=S.mountScene(document.getElementById("a"), screenBench({}), {height:620});
+  window.__B=S.mountScene(document.getElementById("b"), screenBench({show:"projector"}), {height:420});
+  window.__C=S.mountScene(document.getElementById("c"), psuBench({show:"ups"}), {height:420});
+  window.__READY=true;
+}catch(e){err.textContent="THREW: "+(e&&e.stack||e);}
+</script>

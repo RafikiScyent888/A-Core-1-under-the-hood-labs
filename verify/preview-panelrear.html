@@ -1,0 +1,30 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Patch panel, both sides</title>
+<style>body{margin:0;background:#11161b;color:#e8edf2;font:15px/1.5 system-ui,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:12px 16px 28px}
+h1{font-size:1.1rem;margin:4px 0 10px}.row{display:flex;gap:14px;flex-wrap:wrap}.cell{flex:1 1 420px}
+.cap{font-weight:700;margin:0 0 4px;font-size:.92rem}#err{color:#ff9;white-space:pre-wrap}</style>
+</head><body><div class="wrap">
+<h1>The patch panel &mdash; the front nobody learns from, and the back nobody photographs</h1>
+<div class="row">
+  <div class="cell"><p class="cap">The back, whole</p><div id="a"></div></div>
+  <div class="cell"><p class="cap">Close on the colour code &mdash; from the front, as the lab shows it</p><div id="b"></div></div>
+</div>
+<div id="err"></div></div>
+<script type="module">
+const err=document.getElementById("err");
+window.addEventListener("error",e=>{err.textContent+="\n"+e.message;});
+try{
+  const S=await import("../assets/scene.js");
+  const { netBench }=await import("../assets/bench-net.js");
+  const KEEP=/^(hop-panel|panel-)/;
+  const SHOTS=[["a",{dist:9,yaw:3.45,pitch:0.42,target:[4.0,0,-0.8],min:3,max:40}],
+               ["b",{dist:2.1,yaw:0.30,pitch:1.05,target:[4.0,0.82,-0.55],min:0.8,max:40}]];
+  for (const [host,cam] of SHOTS) {
+    const spec=netBench({states:{}});
+    spec.parts=spec.parts.filter(p=>KEEP.test(p.key));
+    spec.board=null; spec.camera=cam;
+    S.mountScene(document.getElementById(host), spec, {height:430});
+  }
+  window.__READY=true;
+}catch(e){err.textContent="THREW: "+(e&&e.stack||e);}
+</script></body></html>

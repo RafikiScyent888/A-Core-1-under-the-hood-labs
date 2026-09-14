@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RAID bench — operable</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  body { background: var(--ground); color: var(--ink);
+         font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; margin: 0; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 18px 18px 60px; }
+  h1 { font-size: 1.35rem; margin: 0 0 4px; }
+  .brief { color: var(--ink-dim); max-width: 76ch; margin: 0 0 16px; }
+  #err { color: #ff9b93; font-weight: 700; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Storage bench — a five-member RAID 5 with one hot spare</h1>
+  <p class="brief">Bay 3 has failed. Fit a replacement and nurse the rebuild.
+     Everything here is a real button; the picture is a second view of the same
+     state. Try pulling the wrong caddy while it rebuilds and find out what that
+     costs.</p>
+  <div id="bench"></div>
+  <div id="err"></div>
+</div>
+
+<script type="module">
+import { mountBench } from "../assets/bench.js";
+import { raidBench, bayWords } from "../assets/bench-raid.js";
+import { makeArray, pull, insert, tick, capacityTB, toleranceGuaranteed } from "../assets/array.js";
+
+const err = document.getElementById("err");
+window.addEventListener("error", e => { err.textContent += "\n" + e.message; });
+
+const A = makeArray({ level: "RAID 5", memberCount: 5, spares: 1, sizeTB: 4, bayCount: 8 });
+/* Bay 3 arrives already dead — that is the job. */
+A.bays[2].state = "failed";
+A.bays[4].state = "predictive";
+import("../assets/array.js").then(m => m.recompute(A)).then(() => bench.refresh());
+
+const TONE = { healthy:"calm", degraded:"warn", rebuilding:"warn",
+               critical:"urgent", lost:"dead" };
+
+function status() {
+  const n = A.bays.filter(b => b.role === "member").length;
+  const cap = capacityTB(A.level, n, A.sizeTB);
+  const tol = toleranceGuaranteed(A.level, n);
+  const words = {
+    healthy: "Healthy", degraded: "Degraded", rebuilding: "Rebuilding",
+    critical: "Critical", lost: "Array lost"
+  }[A.status] || A.status;
+  let detail = A.level + ", " + n + " members — " + cap + " TB usable, survives " + tol + ".";
+  if (A.status === "rebuilding") detail += " Rebuild " + A.rebuildPct + "% complete.";
+  if (A.status === "lost") detail = "The data is gone. A new disk will not bring it back.";
+  return { words, tone: TONE[A.status] || "calm", detail };
+}
+
+function controls() {
+  return A.bays.map((b, i) => {
+    const acts = [];
+    if (A.status !== "lost") {
+      if (b.state === "ok" || b.state === "active" || b.state === "predictive" ||
+          b.state === "rebuilding" || b.state === "spare") {
+        acts.push({ id: "pull", label: "Pull",
+          hint: "Withdraw this caddy from the chassis" });
+      }
+      if (b.state === "failed" || b.state === "pulled" || b.state === "empty") {
+        acts.push({ id: "fit4", label: "Fit a 4 TB drive" });
+        acts.push({ id: "fit2", label: "Fit a 2 TB drive" });
+      }
+      if (A.rebuildInto !== null) {
+        if (i === A.rebuildInto) acts.push({ id: "wait", label: "Let it run" });
+      }
+    }
+    return {
+      key: "bay" + (i + 1),
+      label: "Bay " + (i + 1),
+      state: b.state,
+      stateWords: bayWords(b.state),
+      detail: b.role === "member" ? b.sizeTB + " TB member"
+            : b.role === "spare" ? b.sizeTB + " TB hot spare"
+            : "No drive fitted",
+      actions: acts
+    };
+  });
+}
+
+function onAction(key, id) {
+  const i = parseInt(key.replace("bay", ""), 10) - 1;
+  if (id === "pull")  return { say: pull(A, i).why, flash: key };
+  if (id === "fit4")  return { say: insert(A, i, { sizeTB: 4 }).why, flash: key };
+  if (id === "fit2")  return { say: insert(A, i, { sizeTB: 2 }).why, flash: key };
+  if (id === "wait") {
+    const done = tick(A, 30);
+    return { say: done
+      ? "Rebuild complete. Every block has been reconstructed from parity and the set is "
+        + "whole again — this is the first moment since the failure that it could survive "
+        + "another one."
+      : "Rebuild at " + A.rebuildPct + "%. While this runs the array has no redundancy left, "
+        + "and every remaining member is being read end to end — which is exactly when a "
+        + "second, older disk tends to give up.", flash: key };
+  }
+  return {};
+}
+
+let bench;
+try {
+  bench = mountBench(document.getElementById("bench"), {
+    spec: () => raidBench({
+      level: A.level,
+      arrayState: A.status === "lost" ? "critical" : A.status,
+      focus: null,
+      bays: A.bays.map(b => ({ state: b.state, sizeTB: b.sizeTB || undefined }))
+    }),
+    controls, status, onAction, height: 400
+  });
+  window.__bench = bench;
+  window.__A = A;
+  window.__ok = true;
+} catch (e) {
+  window.__ok = false;
+  err.textContent = "THREW: " + (e && e.stack || e);
+}
+</script>
+</body>
+</html>

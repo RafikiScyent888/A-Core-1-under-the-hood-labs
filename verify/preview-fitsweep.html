@@ -1,0 +1,30 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>fitWidth sweep</title>
+<style>body{margin:0;font:13px ui-monospace,monospace;background:#eef1f2;padding:12px}
+pre{background:#fff;padding:10px;border-radius:6px}</style></head><body>
+<div id="host"></div><pre id="out"></pre><div id="err"></div>
+<script type="module">
+import * as S from "../assets/scene.js";
+import { mobileBench } from "../assets/bench-mobile.js";
+const L=[];
+try{
+/* Sweep fitWidth against frustumOK at the narrowest canvas a student gets,
+   and at the widest, so the value is MEASURED and not picked. */
+for (const fw of [0, 20, 24, 28, 32]) {
+  const row = [String(fw).padStart(3)];
+  for (const w of [319, 889]) {
+    const spec = mobileBench({ panel:"lcd", healthPct: 72,
+      states:{back:"na",battery:"na",midframe:"na",backlight:"na",lcd:"na",digitizer:"na",glass:"faulty"} });
+    if (fw) spec.camera.fitWidth = fw;
+    const host = document.createElement("div");
+    host.style.width = w + "px";
+    document.getElementById("host").appendChild(host);
+    const h = S.mountScene(host, spec, { height: 460 });
+    row.push(String(h.frustumOK().out.length).padStart(3));
+  }
+  L.push(row.join("   "));
+}
+}catch(e){document.getElementById("err").textContent="THREW: "+(e&&e.stack||e);}
+document.getElementById("out").textContent =
+  "fitW   319  889   (parts crossing the frame edge)\n" + L.join("\n");
+window.__READY=true;
+</script></body></html>

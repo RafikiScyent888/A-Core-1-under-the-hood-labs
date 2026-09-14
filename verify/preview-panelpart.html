@@ -1,0 +1,25 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>mobile-panelpart — preview</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>body{margin:0}#host{max-width:1080px;margin:12px auto;padding:0 16px}
+#err{color:#ff9;font-weight:700;padding:0 16px;white-space:pre-wrap}</style></head><body>
+<div id="host"></div><div id="err"></div>
+<script type="module">
+const err=document.getElementById("err");
+window.addEventListener("error",e=>{err.textContent+="\n"+e.message;});
+window.addEventListener("unhandledrejection",e=>{err.textContent+="\nPROMISE "+((e.reason&&e.reason.message)||e.reason);});
+try{
+  const L=await import("../assets/lab-mobile.js");
+  const R=await import("../assets/runner.js");
+  const seed=Number(new URLSearchParams(location.search).get("seed")||1);
+  const s=L.generate(seed);
+  /* The case this seed landed on, published so the driver can assert the
+     RIGHT part is the one on offer rather than merely that six things
+     appeared. A stage that renders six plausible options and none of them
+     correct would pass every structural check in the suite. */
+  window.__CASE = { key: s.ppcase.key, part: s.ppcase.part };
+  R.createRunner(document.getElementById("host"), {
+    lab:L, stages:[L.buildStage("panelpart", s)], scenario:s, onProgress(){}, onDone(){}
+  });
+  window.__READY=true;
+}catch(e){err.textContent="THREW: "+(e&&e.stack||e);}
+</script></body></html>

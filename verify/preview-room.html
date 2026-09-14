@@ -1,0 +1,34 @@
+<!doctype html><meta charset="utf-8"><title>The workshop</title>
+<body style="margin:0;background:#eceff0">
+<div id="s"></div><pre id="e" style="color:#7a1010"></pre>
+<script type="module">
+/* ONE BENCH PER PAGE LOAD. Three benches on one page came back as a
+   blank image at a larger canvas size — the browser's WebGL context cap
+   again, which preview-frame.html already carries a note about. A
+   harness that quietly returns nothing is worse than one that fails. */
+const S = await import("../assets/scene.js");
+const Q = new URLSearchParams(location.search);
+try {
+  const M = await import("../assets/" + Q.get("mod") + ".js");
+  const view = Q.get("show") ? { show: Q.get("show") } : {};
+  /* ?warm=1 picks the timber palette instead of the silver one. It is a
+     PREVIEW SWITCH and nothing else — the warm set is outside the royal
+     six and is not used anywhere in the build unless the owner says so. */
+  if (Q.get("warm")) view.warm = true;
+  /* ?arg= passes a first positional argument, for a builder like
+     machineBench(key, view) that names WHICH machine to draw. */
+  const spec = Q.get("arg") ? M[Q.get("fn")](Q.get("arg"), view) : M[Q.get("fn")](view);
+  /* ?only= keeps just the parts whose key contains this string, and ?cam=
+     overrides dist/fitWidth/target-y. Both exist so a bench that renders
+     wrong can be taken apart on the page instead of argued about from a
+     thumbnail. */
+  if (Q.get("only")) spec.parts = spec.parts.filter(p => p.key.indexOf(Q.get("only")) !== -1);
+  if (Q.get("dist")) spec.camera.dist = Number(Q.get("dist"));
+  if (Q.get("fw")) spec.camera.fitWidth = Number(Q.get("fw"));
+  if (Q.get("ty")) spec.camera.target = [spec.camera.target[0], Number(Q.get("ty")), spec.camera.target[2]];
+  document.title = spec.parts.length + " parts";
+  window.__H = S.mountScene(document.getElementById("s"), spec,
+                            { height: Number(Q.get("h") || 620) });
+  window.__READY = true;
+} catch (e) { document.getElementById("e").textContent = "THREW: " + (e && e.stack || e); }
+</script>

@@ -1,0 +1,32 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Fibre connectors</title>
+<style>body{margin:0;background:#11161b;color:#e8edf2;font:15px/1.5 system-ui,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:14px 18px 28px}
+h1{font-size:1.1rem;margin:4px 0 8px}.cap{font-weight:700;margin:10px 0 4px;font-size:.92rem}
+#err{color:#ff9;white-space:pre-wrap}</style></head><body><div class="wrap">
+<h1>The four fibre connectors &mdash; LC, SC, ST, FC</h1>
+<p class="cap">All four at the close-up scale (1 unit = 2 mm)</p><div id="a"></div>
+<p class="cap">The two that lock mechanically &mdash; ST bayonet, FC threaded</p><div id="b"></div>
+<div id="err"></div></div>
+<script type="module">
+const err=document.getElementById("err");
+window.addEventListener("error",e=>{err.textContent+="\n"+e.message;});
+try{
+  const S=await import("../assets/scene.js");
+  const { fibreBench }=await import("../assets/bench-net.js");
+  /* ?tight=N shrinks fitWidth so the margin check in shot-fibre.mjs can be
+     shown to FAIL before its pass is believed. A checker that has never
+     fired is not a checker. */
+  const TIGHT=parseFloat(new URLSearchParams(location.search).get("tight")||"1");
+  const ONLY=new URLSearchParams(location.search).get("only");
+  const main=fibreBench({});
+  if(ONLY) main.parts=main.parts.filter(p=>new RegExp(ONLY).test(p.key));
+  main.camera=Object.assign({},main.camera,
+    {fitWidth:main.camera.fitWidth*TIGHT, dist:main.camera.dist*TIGHT, min:4});
+  window.__SCENE=S.mountScene(document.getElementById("a"), main, {height:440});
+  const close=fibreBench({});
+  close.parts=close.parts.filter(p=>/fib-(st|fc)/.test(p.key));
+  close.camera={dist:26*TIGHT,min:4,fitWidth:28*TIGHT,yaw:0.22,pitch:0.30,target:[12,0,0],min:6,max:70};
+  window.__CLOSE=S.mountScene(document.getElementById("b"), close, {height:560});
+  window.__READY=true;
+}catch(e){err.textContent="THREW: "+(e&&e.stack||e);}
+</script></body></html>

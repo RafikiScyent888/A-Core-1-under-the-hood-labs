@@ -1,0 +1,19 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>belt</title>
+<style>body{margin:0;background:#eceff0;color:#14181b;font:16px/1.5 system-ui,sans-serif}
+.row{width:980px;margin:6px auto}h1{font-size:1.0rem;margin:10px 16px 2px}
+#err{color:#7a1010;font-weight:700;padding:0 16px}</style></head><body>
+<h1>Transfer belt — worn: dented, scored, toner caking, margins fraying</h1><div class="row" id="c"></div>
+<h1>Transfer belt — failed: punctured, stretched and rippling, drifted to one side</h1><div class="row" id="d"></div>
+<div id="err"></div>
+<script type="module">
+import * as S from "../assets/scene.js";
+import { wearBench } from "../assets/bench-wear.js";
+const err=document.getElementById("err");
+window.addEventListener("error",e=>{err.textContent+="\n"+e.message;});
+try{
+ [["c","worn","Dimples across it, score lines down the travel, toner caking in bands"],
+  ["d","failed","Punctured, rippling because it has stretched, and riding against one side plate"]]
+ .forEach(([id,rung,look])=>S.mountScene(document.getElementById(id),
+   wearBench({shape:"belt",rung,label:"Transfer belt",look}),{height:330}));
+}catch(e){err.textContent="THREW: "+(e&&e.stack||e);}
+</script></body></html>

@@ -1,0 +1,46 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>The handset bench at phone widths</title>
+<style>
+ body{margin:0;background:#eef1f2;color:#101417;font:15px/1.5 system-ui,sans-serif}
+ .wrap{max-width:1180px;margin:0 auto;padding:12px 16px 26px}
+ h1{font-size:1.2rem;margin:6px 0 2px}
+ .row{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
+ .cap{font-weight:700;margin:0 0 2px;font-size:.9rem}
+ .sub{font-size:.82rem;color:#333d42;margin:0 0 6px}
+ #err{color:#7a1010;font-weight:700;white-space:pre-wrap}
+</style></head><body><div class="wrap">
+<h1>The handset bench, at the canvas widths a student actually gets</h1>
+<p class="sub">The field of view is vertical, so a NARROW canvas shows less width at the same
+distance. These are the real widths measured off the running lab.</p>
+<div class="row">
+  <div><p class="cap">319px &mdash; a phone</p><div id="w319" style="width:319px"></div></div>
+  <div><p class="cap">480px</p><div id="w480" style="width:480px"></div></div>
+</div>
+<div class="row" style="margin-top:12px">
+  <div><p class="cap">697px &mdash; a tablet</p><div id="w697" style="width:697px"></div></div>
+</div>
+<div class="row" style="margin-top:12px">
+  <div><p class="cap">889px &mdash; a laptop</p><div id="w889" style="width:889px"></div></div>
+</div>
+<pre id="out" style="font:13px ui-monospace,monospace;background:#fff;padding:10px;border-radius:6px"></pre>
+<div id="err"></div></div>
+<script type="module">
+import * as S from "../assets/scene.js";
+import { mobileBench } from "../assets/bench-mobile.js";
+const err=document.getElementById("err");
+window.addEventListener("error",e=>{err.textContent+="\n"+e.message;});
+try{
+const lines=[];
+for (const w of [319, 480, 697, 889]) {
+  const spec = mobileBench({ panel:"lcd", healthPct: 72,
+    states:{back:"na",battery:"na",midframe:"na",backlight:"na",lcd:"na",digitizer:"na",glass:"faulty"} });
+  const h = S.mountScene(document.getElementById("w"+w), spec, { height: 460 });
+  /* .out, NOT the wrapper — see preview-frustum.html. */
+  const off = h.frustumOK().out;
+  lines.push(String(w).padStart(4) + "px  parts crossing the frame edge: " +
+    (off.length ? off.length + "  [" + off.join(", ") + "]" : "none"));
+}
+document.getElementById("out").textContent = lines.join("\n");
+window.__READY=true;
+}catch(e){err.textContent="THREW: "+(e&&e.stack||e);}
+</script></body></html>

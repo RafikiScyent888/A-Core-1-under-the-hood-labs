@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Thermal bench — preview</title>
+<style>
+  body { margin:0; background:#eceff0; color:#14181b;
+         font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif; }
+  #stage { width:1000px; margin:12px auto; }
+  h1 { font-size:1.1rem; margin:14px 16px 6px; }
+  #err { color:#7a1010; font-weight:700; padding:0 16px; white-space:pre-wrap; }
+</style></head><body>
+<h1>Thermal bench — debris on the heating element, white line down every label</h1>
+<div id="stage"></div><div id="err"></div>
+<script type="module">
+import * as S from "../assets/scene.js";
+import { thermalBench } from "../assets/bench-thermal.js";
+const err = document.getElementById("err");
+window.addEventListener("error", e => { err.textContent += "\n" + e.message; });
+try {
+  const spec = thermalBench({
+    states: { platen:"ok", element:"faulty", flex:"na", latch:"ok", sensor:"na", roll:"ok" },
+    symptom: "void", debris: true, debrisAt: 2.4, latchOpen: false, rollLeft: 0.7
+  });
+  const h = S.mountScene(document.getElementById("stage"), spec, { height: 440 });
+  if (!h) err.textContent = "mountScene returned null";
+} catch (e) { err.textContent = "THREW: " + (e && e.stack || e); }
+</script></body></html>

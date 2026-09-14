@@ -1,0 +1,25 @@
+<!doctype html><meta charset="utf-8"><title>Roller wear ladder</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>body{background:#12161b;color:#e9edf1;font:15px system-ui;margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding:14px 18px 28px}
+h2{font-size:16px;margin:14px 0 4px}pre{color:#ffb4b4;white-space:pre-wrap}</style>
+<div class="wrap">
+<h2>fresh</h2><div id="a"></div>
+<h2>early</h2><div id="b"></div>
+<h2>worn</h2><div id="c"></div>
+<h2>failed</h2><div id="d"></div>
+<h2>perished — NEW</h2><div id="e"></div>
+<pre id="err"></pre></div>
+<script type="module">
+const err=document.getElementById("err");
+window.addEventListener("error",e=>{err.textContent+="\n"+e.message;});
+try{
+  const S=await import("../assets/scene.js");
+  const { wearBench }=await import("../assets/bench-wear.js");
+  ["a","b","c","d","e"].forEach((id,i)=>{
+    const rung=["fresh","early","worn","failed","perished"][i];
+    S.mountScene(document.getElementById(id), wearBench({shape:"roller",rung:rung}), {height:250});
+  });
+  window.__READY=true;
+}catch(e){err.textContent="THREW: "+(e&&e.stack||e);}
+</script>

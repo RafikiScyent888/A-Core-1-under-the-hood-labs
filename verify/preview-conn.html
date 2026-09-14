@@ -1,0 +1,23 @@
+<!doctype html><meta charset="utf-8"><title>Video and PSU benches</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>body{background:#12161b;color:#e9edf1;font:15px system-ui;margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding:14px 18px 28px}
+h2{font-size:17px;margin:16px 0 6px}pre{color:#ffb4b4;white-space:pre-wrap}</style>
+<div class="wrap">
+<h2>Get a picture into it — HDMI, DisplayPort, DVI-D, VGA, USB-C</h2><div id="a"></div>
+<h2>Cable it — 24-pin ATX, EPS 8-pin, PCIe 6+2, SATA, Molex</h2><div id="b"></div>
+<h2>115, 230, and the little red switch</h2><div id="c"></div>
+<pre id="err"></pre></div>
+<script type="module">
+const err=document.getElementById("err");
+window.addEventListener("error",e=>{err.textContent+="\n"+e.message;});
+try{
+  const S=await import("../assets/scene.js");
+  const { videoBench }=await import("../assets/bench-video.js");
+  const { psuBench }=await import("../assets/bench-psu.js");
+  window.__A=S.mountScene(document.getElementById("a"), videoBench({}), {height:430});
+  window.__B=S.mountScene(document.getElementById("b"), psuBench({}), {height:430});
+  window.__C=S.mountScene(document.getElementById("c"), psuBench({show:"rear"}), {height:450});
+  window.__READY=true;
+}catch(e){err.textContent="THREW: "+(e&&e.stack||e);}
+</script>
