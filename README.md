@@ -211,7 +211,7 @@ No build step, no framework, and nothing is fetched at runtime — it works from
 memory stick in a room with no network.
 
 ## Verification
-
+ 
 ```
 node verify/verify.mjs
 ```
