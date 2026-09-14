@@ -1,0 +1,20 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>w</title>
+<style>body{margin:0;background:#eceff0;color:#14181b;font:16px/1.5 system-ui,sans-serif}
+.row{width:980px;margin:6px auto}h1{font-size:1.0rem;margin:10px 16px 2px}
+#err{color:#7a1010;font-weight:700;padding:0 16px;white-space:pre-wrap}</style></head><body>
+<h1>Encoder strip — worn</h1><div class="row" id="d0"></div>
+<h1>Head gap lever — failed</h1><div class="row" id="d1"></div>
+<h1>Fuser pressure roller — early</h1><div class="row" id="d2"></div>
+<h1>Transfer roller — worn</h1><div class="row" id="d3"></div>
+<div id="err"></div><script type="module">
+import * as S from "../assets/scene.js";
+import { wearBench } from "../assets/bench-wear.js";
+const err=document.getElementById("err");
+window.addEventListener("error",e=>{err.textContent+="\n"+e.message;});
+try{
+ S.mountScene(document.getElementById("d0"),wearBench({shape:"strip",rung:"worn",label:"Encoder strip",look:"Heavy ink mist over the bars"}),{height:300});
+ S.mountScene(document.getElementById("d1"),wearBench({shape:"lever",rung:"failed",label:"Head gap lever",look:"The detent has gone and the lever flops"}),{height:300});
+ S.mountScene(document.getElementById("d2"),wearBench({shape:"roller",rung:"early",label:"Fuser pressure roller",look:"Starting to show signs of wear: a faint gloss band"}),{height:300});
+ S.mountScene(document.getElementById("d3"),wearBench({shape:"roller",rung:"worn",label:"Transfer roller",look:"Glazed, and a groove worn where the media runs"}),{height:300});
+}catch(e){err.textContent="THREW: "+(e&&e.stack||e);}
+</script></body></html>
