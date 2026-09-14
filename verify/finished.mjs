@@ -225,7 +225,7 @@ let againSaid = "";
     await p.waitForFunction(() => window.__UTHL && window.__UTHL.running(), { timeout: 20000 });
     const seed2 = await p.evaluate(() => window.__UTHL.running().snapshot().seed);
     againSaid = seed2 === seed ? "" : "reopened seed " + seed2 + ", recorded " + seed;
-  }
+  } 
   console.log("  " + "again".padEnd(8) +
     (againSaid ? "FAIL — " + againSaid : "\"Do it again\" reopens the same seed (" + seed + ")"));
   if (againSaid) bad++;
