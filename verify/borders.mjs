@@ -193,7 +193,7 @@ THEMES.forEach(function (th) {
         : "visible at " + worst.toFixed(2) + ":1 (" + worstOn.replace("--", "") +
           "), " + apart.toFixed(2) + ":1 clear of the hairline"]);
   });
-});
+}); 
 
 rows.forEach(function (r) {
   console.log("  " + r[0].padEnd(6) + r[1].padEnd(22) + r[2]);
