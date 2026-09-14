@@ -16,6 +16,14 @@
     document.documentElement.setAttribute("data-reading",
       localStorage.getItem("uthl.reading.v1") === "dyslexia" ? "dyslexia" : "default");
   } catch (e) { document.documentElement.setAttribute("data-reading", "default"); }
+  /* Theme, same reason: a module is deferred, so setting this from app.js
+     would paint dark and then flash to light. DARK IS THE DEFAULT and the
+     machine's own setting does not get a vote — only the student's stored
+     choice does. This must stay in step with `current()` in theme.js. */
+  try {
+    document.documentElement.setAttribute("data-theme",
+      localStorage.getItem("uthl.theme.v1") === "light" ? "light" : "dark");
+  } catch (e) { document.documentElement.setAttribute("data-theme", "dark"); }
 </script>
 </head>
 <body>
@@ -28,7 +36,26 @@
       see what it is actually doing &mdash; then live with whatever you chose.
       Pick a lab, pick how long you have.</p>
     <div id="reading"></div>
+    <div id="theme"></div>
+    <!-- Instructor mode, PIN 3693. Mounted from instructor.js rather than
+         written here so the markup and the behaviour cannot drift apart,
+         and placed beside the other two settings because an instructor
+         setting up a projector should not have to hunt for it. -->
+    <div id="instructor"></div>
   </header>
+
+  <!-- THE SHOWROOM — the front door.
+
+       A student picks a lab by pointing at the machine they want to learn,
+       which is how anybody actually chooses. It is mounted from app.js
+       rather than written here, because it needs three.js and a student
+       who never reaches it should not pay for the download.
+
+       THE TABS BELOW IT ARE NOT A FALLBACK, THEY ARE THE INTERFACE. Same
+       contract every bench in this build keeps: the canvas is scenery,
+       and every action lives in a real focusable button with a real name.
+       Turn WebGL off and the whole site still works. -->
+  <div id="showroom"></div>
 
   <nav aria-label="Choose a lab">
     <ul class="tabs" id="tabs" role="tablist"></ul>
@@ -41,6 +68,16 @@
     </div>
     <p class="note" id="lengthnote"></p>
   </div>
+
+  <!-- The storage room: every job put down, one per lab, and every job
+       finished. Drawn from app.js and absent entirely until a student
+       parks or finishes something. -->
+  <div id="storage"></div>
+
+  <!-- The instructor's job sheet and objective coverage. Empty unless the
+       PIN has been entered this session, and it costs a student nothing:
+       the lab modules it reads are only imported once it is asked for. -->
+  <div id="insSheet"></div>
 
   <main id="plan" aria-live="polite"></main>
 
