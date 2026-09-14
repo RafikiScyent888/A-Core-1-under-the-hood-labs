@@ -7,6 +7,16 @@
 <meta name="description" content="Six hands-on A+ Core 1 labs — printers, workstation builds, RAID, power, wireless and mobile devices. Build it, run it, and see what it is actually doing. Part of the Cyber Warrior Program.">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/style.css">
+<!-- Applied before the page paints. A module is deferred, so doing this from
+     app.js would show the default face and then visibly reflow into the
+     reading face — which is not a neutral thing to do to somebody who needs
+     the setting. -->
+<script>
+  try {
+    document.documentElement.setAttribute("data-reading",
+      localStorage.getItem("uthl.reading.v1") === "dyslexia" ? "dyslexia" : "default");
+  } catch (e) { document.documentElement.setAttribute("data-reading", "default"); }
+</script>
 </head>
 <body>
 
@@ -14,9 +24,10 @@
 
   <header class="top">
     <h1>A+ Core1 Under the Hood Labs</h1>
-    <p>CompTIA A+ Core 1, 220-1201. Six labs where you build the thing, run it, and
+    <p>CompTIA A+ Core 1, 220-1201. Eight labs where you build the thing, run it, and
       see what it is actually doing &mdash; then live with whatever you chose.
       Pick a lab, pick how long you have.</p>
+    <div id="reading"></div>
   </header>
 
   <nav aria-label="Choose a lab">
