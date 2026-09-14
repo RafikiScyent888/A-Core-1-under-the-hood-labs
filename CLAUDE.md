@@ -104,6 +104,22 @@ experience on its own.** Longer choices add stages; they never unlock a
 conclusion the short path was missing. If Quick feels like a truncated Project,
 the tiering is wrong.
 
+**LAYERED IS THE LENGTH CLOSEST TO `Core-1-Sims`** — the owner's answer, asked
+directly and given plainly. It matters because the two builds ship alongside
+each other and a student crosses between them: a sim is a short spine with the
+depth there for whoever wants it, which is exactly what Layered is and what
+Quick is not. So when a stage has to be assigned a tier and the argument is
+finely balanced, **Layered is the shape to preserve** — put it in `core` and
+offer the depth inline rather than promoting it to `lab` where a student
+arriving from the sims will never meet it.
+
+**LAYERED IS ALSO THE DEFAULT THE DROPDOWN OPENS ON** (`assets/app.js`), and
+that follows from the same answer. It was `lab` for most of this build's life,
+which handed a student who pressed Start without reading the dropdown a 30-to-45
+minute commitment they had not chosen. Layered starts short and hides nothing —
+it offers every deeper stage inline as they reach it. A student who picks
+something else keeps it; this is only the opening position.
+
 ## The eight labs
 
 Tabs across the top; the student picks which to do.
@@ -1291,6 +1307,142 @@ deterministic from the scenario, and it **places the right answer at a slot
 derived from its own score**: an earlier cut let the correct option land last
 in 41% of seeds, which is a pattern a student learns instead of the content.
 
+## The eleven showroom machines have NAMED PARTS
+
+The model dock puts the lab's own machine in front of the student on every step
+that has no bench of its own — thirteen stages across the eight labs, and every
+brief, table and calculation in the build. For most of this build's life that
+machine was **one part**: "Power supply / on the bench". The picture was present
+and the machine was not interrogable, and those are different things.
+
+Every primitive in the eleven builders in `bench-room.js` now carries a `part`
+tag, and `MACHINE_PARTS` says what each tag is called, **what it is seen
+against**, what colour it takes and what sentence it carries. **15 parts became
+53.** Each is a real focusable control beside the canvas with a fact a
+technician would use — why the rocker switch is not the button on the front of
+the case, why a blanked port means the second port does not exist, why a thermal
+roll loaded the wrong way round prints nothing at all.
+
+**The ROOM is deliberately not split.** There a machine is a door into a lab and
+a click opens that lab; six ways into the Printer lab, one of them called "the
+tear bar", is worse than one.
+
+Four things this cost, three found by the checks rather than by reading:
+
+- **Adjacency is a statement, not a blanket rule.** The obvious check — every
+  part must differ from the body — is *false* here: a server rack really is
+  near-black frame, near-black chassis and bright lamps, and that hierarchy is
+  the skill. Each row names what it is **seen against** with `on:`, and the
+  luminance gap is held there.
+- **A machine must not borrow the room's colours.** `steel` and `steelHi` are
+  the SHELVING, and in the warm preview palette they are timber — so the laser's
+  paper tray came out 0.016 in luminance from its own body the moment the check
+  ran on that palette. `alu` and `aluPale` have the same value in both palettes
+  now, and both palettes are checked.
+- **A declared clash is fine; an undeclared one is two parts reading as one.**
+  The outlet's blank IS the plate's white on purpose — that is how you see from
+  across a room that nobody ran a second cable — so it declares `sameColourAs`,
+  the same arrangement the thermal pair on the `choose` bench already uses.
+- **A lab that never rests is a different claim, and it gets checked too.** The
+  Printer lab has a bench of its own on all fifteen stages, so its dock never
+  rests. An exemption list keyed on the lab name is a thing somebody adds a lab
+  to when it fails; that case is *verified* instead — every stage must still have
+  had a live canvas.
+
+`verify/machine-parts.mjs` runs both arms: DECLARED reads the module, REACHED
+drives eight real labs in a browser and counts the controls the dock actually
+offers. Calibrated six for six, and **the third defect had to be rewritten**:
+naming a row after a part that does not exist plants two defects at once and the
+orphaned-tag arm fires first, so the arm it was named after was never reached.
+
+### Five more termination faults, earned by the outlet
+
+The standing five-more rule, and the good kind of it again. `TERM_OPTS` in
+`lab-net.js` went from eight to thirteen, and every one of the five new faults
+lives on a part that did not exist until the outlet got named: the blank, the
+port labels, the backbox, the contacts in the jack, and the patch lead lying
+beside the plate.
+
+They are near misses of each other on purpose. Four of the five present as "this
+data point does not work properly" and the discriminator is buried in the report
+every time — whether the port was ever alive, whether the fault follows the
+LEAD, whether it comes and goes when something is touched, and whether the
+tester failed at one END or along the RUN.
+
+**Rung 2 of that stage's hint ladder had to be rewritten.** The old one was
+about continuity against pairing, which decides the plug faults and says nothing
+at all about a corroded jack or a kinked cable behind it. A rung that only
+covers half the pool goes silent exactly when a student is stuck. Rung 3 narrows
+by FAMILY rather than by naming options, because the pool is thirteen deep and
+the six on screen change with the seed — a rung that struck options by name
+would strike things that are not there, which is worse than silence.
+
+`selfCheck` in `lab-net.js` now holds that **every case's answer is in the pool
+it is offered from**. A case naming a key that is not in its pool produces a
+question with six wrong answers: it renders, it grades, and every student who
+reads it correctly is told they are wrong. Worth having now rather than before
+because the pools have started to GROW. Calibrated both ways.
+
+## The storage room holds finished jobs as well as parked ones
+
+It held only work that had been PUT DOWN. A student who had finished four labs
+and parked none opened the front page to an empty shelf — the score was shown
+once, on the last screen, and then the tab was closed and it was gone. These
+labs are an hour each and students do them alone over weeks; what they have
+already done is the thing the page most needs to remember.
+
+- **One row per job, not per attempt.** A job is a lab and a seed, so redoing
+  the Continental Freightways printer job updates its own row.
+- **The best score wins, the latest date is kept.** The reason to repeat a lab
+  is to do it better, and a record that overwrote 11/12 with 6/12 would punish
+  exactly that.
+- **Finishing a job takes it off the parked shelf.** A real bug, not a tidy-up:
+  park, come back, pick it up, finish it, and the half-done copy sat on the
+  shelf for ever inviting the student back into work they had completed.
+- **`finishedAt`, not `at`.** A parked job's `at` is the STAGE INDEX and a
+  finished job's is a millisecond timestamp. Two shapes sharing one field name
+  is how a sort by date ends up ordering by stage number, silently.
+
+`verify/finished.mjs` drives all eight labs through park, pick up, finish,
+reload. `--calibrate` breaks the wiring at TWO points — the shell's `onDone`
+hook and the parked-drop inside `finish` — because the first two claims fail
+independently and a single break would leave one arm untested and looking green.
+
+## Instructor mode — PIN 3693
+
+The standing rule names this PIN and every other site in the family has a mode
+behind it. This repo had the number in a comment and **no implementation at
+all**. Three things are behind it now:
+
+| | |
+|---|---|
+| **The job sheet** | every lab's six named jobs with their seeds, so a class can be set the same one, and a button that sets one on this machine for a demonstration |
+| **The coverage** | which sub-objectives each lab's stages carry, read off the registry rather than typed, so a lesson can be planned against the blueprint |
+| **The answers** | on the stage that is open, while a lab is running |
+
+The job sheet is the half that **could not exist before the named scenario
+picker**: every job now has a stable name and a stable seed, identical on every
+student's screen, so "everyone do the Continental Freightways job" is a thing
+that can be said to a room.
+
+**The PIN is not security and the file says so out loud.** It is four digits in
+a static file served from GitHub Pages. That is fine, and the reason it is fine
+decides what may go behind it: the PIN keeps the answers out of a student's WAY,
+not out of their reach, so nothing goes behind it that would hurt anybody who
+looked — no personal data, no marks, nothing about another student.
+
+**It does not persist.** A `let`, not localStorage, so it is gone on reload —
+these are shared classroom machines, and a mode that survived the instructor
+walking away would hand the next student the answers with no PIN at all.
+
+**The answer panel refuses rather than guesses.** There are eleven question
+shapes graded eleven different ways. Where the answer is DECLARED — an option
+flagged `correct`, a number with its tolerance — it is printed. Where it lives
+in a grading function inside the lab module, the panel says so and prints the
+question's own `explain`. This repo has already found four wrong answer keys in
+the source sims it was built from, and a wrong key in an instructor's hands is
+worse than no key: it gets said out loud to a room.
+
 ## Standing rules across the program
 
 - **Students have eye damage from military service.** WCAG **AAA** is a
@@ -1316,6 +1468,25 @@ seam metric that would have rejected the tile already shipping.
 **Written and reachable are different claims.** A registry can prove content
 exists; only driving the page proves it renders.
 
+**A CHECK THAT CANNOT SEE A THING IS NOT A CHECK ON THAT THING.** The contrast
+sweep measures TEXT, and for the life of this build several state colours were
+used as BORDERS — where the sweep is blind. That was written down in the
+stylesheet, honestly, and the note ended "borders are held by eye and by these
+definitions, not by the sweep." **Held by eye is not held.** `verify/borders.mjs`
+closes it, and it found three on its first run: `--bad-line` at 1.40:1 against
+the panel it edges, `--hint-line` at 1.69:1, `--ok-line` at 1.88:1 — feedback
+boxes with no visible outline, two of them measuring within 1.2:1 of the plain
+hairline, so a refused answer was drawn in a box whose edge was identical to an
+ordinary one.
+
+The two claims it holds are worth reusing anywhere else in the program: **3:1
+against the worst surface it could land on** (WCAG 1.4.11, both themes), and
+**at least 1.5:1 from the neutral border it replaces** — because a state edge
+that measures the same as a plain one carries no information, and that failure
+is invisible even to a contrast check. The token list is read out of the
+stylesheet, so an edge used for the first time tomorrow is checked tomorrow;
+the exemptions are structural only, and each has to name a reason.
+
 **A calibration run has to be long enough to REACH the planted defect.** Two
 new invariants on the display lab were planted against and came back clean at
 8 seeds — not because the checks were wrong, but because 8 seeds of a six-fault
@@ -1332,6 +1503,10 @@ assets/labs.js          Lab registry — metadata and tiered stage lists
 assets/rng.js           Seeded RNG, so a scenario is reproducible from its seed
 assets/app.js           Shell logic: tabs, length, progress memory
 assets/lab-*.js         One module per lab: generator, stages, grading, hints
+assets/scenarios.js     The six named jobs a lab offers, read off the generator
+assets/storage.js       The storage room: jobs parked, and jobs finished
+assets/instructor.js    Instructor mode, PIN 3693 — job sheet and answers
+assets/theme.js         Light and dark, dark by default, both AAA
 verify/                 Verification suite — run before every delivery
 ```
 
