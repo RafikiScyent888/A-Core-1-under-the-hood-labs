@@ -153,7 +153,45 @@ async function page() {
 
    Scoped, the dialog is measured on its own — which is the thing that
    actually has to be readable. */
+/* WAIT FOR THE PAGE TO STOP MOVING, NOT FOR A NUMBER OF MILLISECONDS.
+
+   `contrast` collects every text box with its page coordinates, then
+   injects a style tag, then takes a FULL-PAGE screenshot and samples
+   those coordinates out of it. Those are three separate moments, and if
+   the page grows between the first and the third every box below the
+   growth is sampled from the WRONG PLACE.
+
+   That is what the front page does. The showroom is a WebGL room mounted
+   from a dynamic import and it is about 420px tall; the named job list
+   is another async import. Under a 48-view sweep with a dozen browser
+   processes competing, either can land after the harness's fixed 40ms
+   wait — so the boxes were measured against a page one panel shorter
+   than the one in the picture.
+
+   IT LOOKED EXACTLY LIKE A CONTRAST BUG. One row of forty-eight, on the
+   longest lab at the longest length, reporting the same kind of element
+   at 1:1, at 5.47:1 and at 2.30:1 — three different answers for three
+   identical stage numbers, which is the tell: a real colour failure is
+   consistent, a misaligned sample is not. Driven on its own the same
+   view measured 141 runs and failed none, twice, at both wait lengths.
+
+   This repo's own rule, written after a flat wait failed a healthy
+   mobile lab: wait for the CONDITION. The condition here is that the
+   document has stopped changing height. It is done INSIDE `contrast` so
+   that no caller can forget it. */
+async function settle(p, ms) {
+  const until = Date.now() + (ms || 5000);
+  let last = -1, still = 0;
+  while (Date.now() < until) {
+    const h = await p.evaluate(() => document.documentElement.scrollHeight);
+    if (h === last) { if (++still >= 2) return h; } else { still = 0; last = h; }
+    await p.waitForTimeout(90);
+  }
+  return last;
+}
+
 async function contrast(p, within) {
+  await settle(p);
   const items = await p.evaluate((sel) => {
     const out = [];
     const root = sel ? document.querySelector(sel) : document;
