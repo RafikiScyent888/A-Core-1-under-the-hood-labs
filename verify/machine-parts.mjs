@@ -203,7 +203,7 @@ for (const labKey of LABS) {
   }
   if (!best) {
     /* A LAB THAT NEVER RESTS IS NOT AN EXEMPTION, IT IS A DIFFERENT
-       CLAIM, AND IT GETS CHECKED TOO.
+       CLAIM, AND IT GETS CHECKED TOO. 
 
        The Printer lab has a bench of its own on every one of its
        fifteen stages — "Every stage of the Printer lab shows the student
